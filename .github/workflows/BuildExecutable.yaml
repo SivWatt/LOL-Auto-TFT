@@ -10,7 +10,7 @@ jobs:
     runs-on: windows-latest
     env:
       EXE_NAME: AutoTFT
-      RELAES_PACKAGE_NAME: AutoTFT
+      RELEASE_PACKAGE_NAME: AutoTFT
     steps:
       - name: Checkout code
         uses: actions/checkout@v2
@@ -29,15 +29,14 @@ jobs:
           pip install pyperclip
           pip install pywin32
 
-
       - name: Build with pyinstaller
         run: |
-          pyinstaller -F -w -n ${{ env.EXE_NAME }} main.py
+          pyinstaller -F -w -n ${{ env.EXE_NAME }} -i image/rsc/window.ico main.py
 
       - name: Compress release package
         run: |
           mv dist/${{ env.EXE_NAME }}.exe ${{ env.EXE_NAME }}.exe
-          7z a -tzip ${{ env.RELAES_PACKAGE_NAME }}.zip '@7zip_list_file.txt'
+          7z a -tzip ${{ env.RELEASE_PACKAGE_NAME }}.zip '@7zip_list_file.txt'
 
       - name: Create Release
         id: create_release
@@ -57,8 +56,8 @@ jobs:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         with:
           upload_url: ${{ steps.create_release.outputs.upload_url }}
-          asset_path: ${{ env.RELAES_PACKAGE_NAME }}.zip
-          asset_name: ${{ env.RELAES_PACKAGE_NAME }}.zip
+          asset_path: ${{ env.RELEASE_PACKAGE_NAME }}.zip
+          asset_name: ${{ env.RELEASE_PACKAGE_NAME }}.zip
           asset_content_type: application/zip
 
       # - name: Upload artifacts
