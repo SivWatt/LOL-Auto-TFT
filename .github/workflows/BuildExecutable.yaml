@@ -28,6 +28,7 @@ jobs:
           pip install pyautogui
           pip install pyperclip
           pip install pywin32
+          pip install keyboard
 
       - name: Build with pyinstaller
         run: |

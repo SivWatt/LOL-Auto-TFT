@@ -1,4 +1,5 @@
 import pyautogui
+import keyboard
 
 import window
 
@@ -104,45 +105,25 @@ class PlayTFT(threading.Thread):
 
 				play.bringFront()
 
-				# open option window
-				optionText = self.locate(self.images.optionText, play.rect, 0.9, 5)
-				if not optionText:
-					self.logger.info("Option window is not detected, press option button")
-					optionButton = self.locate(self.images.optionBtn, play.rect, 0.7, 5)
-					if optionButton:
-						pyautogui.moveTo(optionButton)
-						pyautogui.mouseDown(optionButton,duration=1.0)
-						pyautogui.mouseUp(optionButton)
-					else:
-						self.logger.info("Fail to locate option button, take screenshot.")
-						self.takeScreen()
-						self.logger.info("Run stops at loop %d encountering unexpect situation." % self.totalTimes)
-						return
-			
-				# attempt to surrender
-				ff1Button = self.locate(self.images.ff1Btn, play.rect, 0.9, 5)
-				if ff1Button:
-					pyautogui.mouseDown(ff1Button, duration=1.0)
-					pyautogui.mouseUp(ff1Button)
-					time.sleep(1)
-					# use option text to check whether ff1 is pressed
-					optionText = self.locate(self.images.optionText, play.rect, 0.9, 5)
-					if not optionText:
-						ff2Button = self.locate(self.images.ff2Btn, play.rect, 0.9, 5)
-						if ff2Button:
-							pyautogui.moveTo(ff2Button)
-							pyautogui.mouseDown(ff2Button, duration=1.5)
-							pyautogui.mouseUp(ff2Button)
-							break
-						else:
-							self.logger.info("Unable to locate ff2 button, take screenshot.")
-							self.takeScreen()
-				elif i > 2:
-					self.logger.info("Unable to locate ff1 button, wait 10 seconds.")
+				pyautogui.click(x=play.rect[0]+5, y=play.rect[1]+5)
 
-				# generally won't encounter this, i = 15, 30
-				if i % 15 == 0 and i != 0:
-					self.logger.info("Run takes too long, take screenshot.")
+				# type /ff command
+				keyboard.press_and_release('enter')
+				time.sleep(2)
+				keyboard.write('/ff')
+				keyboard.press_and_release('enter')
+				time.sleep(1)
+				ff2Button = self.locate(self.images.ff2Btn, play.rect, 0.9, 5)
+				if ff2Button:
+					j = 0
+					while j < 3:
+						pyautogui.moveTo(ff2Button)
+						pyautogui.mouseDown(ff2Button, duration=1.5)
+						pyautogui.mouseUp(ff2Button)
+						j += 1
+					break
+				elif i % 15 == 0 and i != 0:
+					self.logger.info("Unable to locate ff2 button, take screenshot.")
 					self.takeScreen()
 				i += 1
 
